@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+
+	<bean id="chef" class="org.gonnys.sample.Chef">
+	</bean>
+
+	<bean id="kcook" class="org.gonnys.sample.KoreanCook"
+		scope="prototype" init-method="init" destroy-method="destory">
+	</bean>
+
+	<bean id="restaurant" class="org.gonnys.sample.Restaurant">
+		<property name="cook" ref="kcook"></property>
+	</bean>
+
+	<bean id="hikariConfjg" class="com.zaxxer.hikari.HikariConfig">
+		<property name="driverClassName"
+			value="com.mysql.cj.jdbc.Driver"></property>
+		<!-- '&'는 특수문자라 인식이 안되므로 &다음에 amp;를 써줘야한다 -->
+		<property name="jdbcUrl"
+			value="jdbc:mysql://localhost:3306/jr?useSSL=false&amp;serverTimezone=UTC"></property>
+		<property name="username" value="jr2018"></property>
+		<property name="password" value="jr2018"></property>
+	</bean>
+
+	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource">
+		<constructor-arg ref="hikariConfjg"></constructor-arg>
+
+
+
+	</bean>
+	<!-- Root Context: defines shared resources visible to all other web components -->
+
+</beans>
