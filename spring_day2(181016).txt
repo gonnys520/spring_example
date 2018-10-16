@@ -1,0 +1,91 @@
+[MyBatis 세팅 순서]
+
+
+1. DataSource 세팅
+- junit, lombok, log4j, mysql, hikariCP
+- 기존에 작성한 setting 확인
+
+2. MyBatis 세팅
+- My batis maven (pom.xml dependency)
+- My batis spring maven (pom.xml dependency)
+- Server 실행하여 Connection 맺어지는거까지 확인
+- spring-test위에 복붙해서 spring-jdbc 추가 (pom.xml 35line)
+
+3. Mapper 세팅
+- 1) root-context.xml 파일에서 </bean>아래에 <mybatis-spring:scan base-package="org.gonnys.mapper"/> 추가
+- 2) src/main/resources 에 src/main/java 에서 만든 매퍼 패키지 네임과 동일한 파일 트리구조로 mapper 폴더 생성
+- 3) src/main/resources 아래의 mapper 폴더에 src/main/java에서 만든 Mapper.java와 동일한 이름으로 Mapper.xml생성 
+- 4) Mapper.xml에 아래와 같은 코드 입력해주기
+(http://www.mybatis.org/mybatis-3/ko/getting-started.html 의 XML에서 SqlSessionFactory 빌드하기 참고)
+
+<?xml version="1.0" encoding="UTF-8" ?>
+	<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+- 5) mapper의 namespace이름은 package이름, interface이름과 동일하게 해주어야한다.
+    ex) <mapper namespace="org.gonnys.mapper.TodoMapper">
+- 6) 기본적인 작업 순서: 
+	domain 패키지 생성 --> src/main/java/org.gonnys.mapper의 Mapper.java 생성
+	--> src/main/resources 최하단에 Mapper.xml생성 -->  src/main/java/org.gonnys.controller에 Tests.java생성
+	--> junit Test 실행
+
+
+
+[수업 필기 내용]
+1. web.xml 파일에서 아래의 코드는
+
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/spring/root-context.xml</param-value>
+	</context-param>
+	
+	<!-- Creates the Spring Container shared by all Servlets and Filters -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+root-context.xml 파일을 contextLoaderListener가 읽어서 연결해주는 것이다.
+- 1) 서블릿은 최초에 호출할 때 생겨짐(처음부터 만들어지는 게 X)
+- 2) URL호출 --> servlet 생김 --> 파일에 있는 설정들을 또 집어 넣음(@controller...)
+
+2.코드가 두개로 분리되어있는 것 같지만 하나로서 실행됌
+	<servlet>
+		<servlet-name>appServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+		
+	<servlet-mapping>
+		<servlet-name>appServlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+
+* Mybatis
+- 개발자가 지정한 SQL, 저장프로시저 그리고 몇가지 고급 매핑을 지원하는 퍼시스턴트 프레임워쿠.
+- JDBC로 처리하는 상당 부분의 코드와 파라미터 설정 및 결과 매필을 대신 해줌.
+- 데이터베이스 레코드에 원시타입과 Map, Interface, JavaPOJO를 설정해서 매핑하기 위해 XML과 어노테이션을 사용.
+
+
+* Mapper
+- Mapper를 사용하면 SqlSession을 직접 사용하는 형태보다 안전하다
+- 맵핑 파일이 자동으로 Mapper 단위가 되기 때문에 관리도 쉽다.
+- Mapper를 설정하기 위해서 root-context.xml 파일에서,
+ 하단 탭의 NamesSpaces항목에서 'mybatis-spring'을 선택하면 scan이 가능하다.
+
+
+* Junit
+- 단위 테스트 Framework 중 하나
+- 어노테이션으로 간결하게 지원
+- 단정문으로 테스트 케이스의 수행 결과를 판별함(assertEquals(예상 값, 실제 값))
+- 결과는 성공(녹색), 실패(붉은색) 중 하나로 표시
+
+
+
+
+
